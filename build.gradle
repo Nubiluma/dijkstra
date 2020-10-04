@@ -5,6 +5,12 @@ plugins {
 group 'de.Nubiluma'
 version '1.0-SNAPSHOT'
 
+jar {
+    manifest {
+        attributes('Main-Class': 'de.Nubiluma.Dijkstra.Main')
+    }
+}
+
 repositories {
     mavenCentral()
 }
