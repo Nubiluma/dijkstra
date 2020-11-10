@@ -1,44 +1,42 @@
 package de.Nubiluma.Dijkstra;
 
+import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.DefaultUndirectedWeightedGraph;
-import sun.security.provider.certpath.Vertex;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-public class Dijkstra {
+public class Dijkstra<T> {
 
-    List<Vertex> todo;
-    List<Vertex> done = new ArrayList<>();
-    HashMap<Vertex, Integer> result = new HashMap<>();
-    private Vertex currentNode;
-    private Vertex min;
-    List<DefaultEdge> edges;
-    private org.jgrapht.Graph<Vertex, DefaultEdge> graph;
+    Set<T> todo;
+    List<T> done = new ArrayList<>();
+    Map<T, Vertex<T>> result = new HashMap<>();
+    private T min;
 
+    public Map<T, Vertex<T>> evaluateDistances(org.jgrapht.Graph<T, DefaultEdge> graph, T start) {
 
-    public HashMap<Vertex, Integer> evaluateDistances(org.jgrapht.Graph<Vertex, DefaultEdge> graph, Vertex start){
-
-        this.graph = graph;
-        graph = new DefaultUndirectedWeightedGraph<>(DefaultEdge.class);
-        todo = new ArrayList<>(graph.vertexSet());
-        edges = new ArrayList<>(graph.edgeSet());
+        todo = graph.vertexSet();
 
         overpredict();
-        result.put(start, 0);
+        result.put(start, new Vertex<>(start, 0));
 
-        while (!todo.isEmpty()){
+        while (!todo.isEmpty()) {
 
-            currentNode = min();
+            T currentNode = min();
             todo.remove(currentNode);
             done.add(currentNode);
 
-            List<Vertex> vertices = new ArrayList<>(graph.vertexSet());
+            for (T t : todo) {
+                // TODO: Hier muss noch die Schleife auf Zeile 36 nachgebaut werden.
+            }
 
             for (int i = 0; i < vertices.size(); i++) {
 
-                if (graph.getEdge(currentNode, vertices.get(i)) != null && currentNode != vertices.get(i)){
-                    relax(currentNode, vertices.get(i));
+                if (graph.getEdge(currentNode, vertices.get(i)) != null && currentNode != vertices.get(i)) {
+                    relax(graph, currentNode, vertices.get(i));
                 } else {
                     System.out.println("Current node has no neighbours.");
                 }
@@ -49,30 +47,31 @@ public class Dijkstra {
         return result;
     }
 
-    public void overpredict(){
+    public void overpredict() {
+        for (T t : todo) {
+            result.put(t, new Vertex<>(t, Integer.MAX_VALUE));
+        }
+    }
 
+    public void relax(Graph<T, DefaultEdge> graph, T u, T v) {
+        Vertex<T> vertex = result.get(u);
+        int distance = vertex.getDistance();
+        double edgeWeight = graph.getEdgeWeight(graph.getEdge(u, v));
+        if (result.get(v).getDistance() > (distance + edgeWeight)) {
+            vertex.setDistance((distance + edgeWeight));
+        }
+    }
+
+    public T min() {
+
+        min = todo.get(0); // TODO: kann als todo.iterator().next(); umgeschrieben werden.
+
+        // TODO: Die Schleife muss noch mit einer for (T t: todo) umgebaut werden.
         for (int i = 0; i < todo.size(); i++) {
-            currentNode = todo.get(i);
-            result.put(currentNode, Integer.MAX_VALUE);
-        }
-    }
 
-    public void relax(Vertex u, Vertex v){
+            T next = todo.get(i);
 
-        if(result.get(v) > (result.get(u) + graph.getEdgeWeight(graph.getEdge(u, v)))){
-            result.put(v, (int) (result.get(u) + graph.getEdgeWeight(graph.getEdge(u, v)))); //double??
-        }
-    }
-
-    public Vertex min(){
-
-        min = todo.get(0);
-
-        for (int i = 0; i < todo.size(); i++){
-
-            Vertex next = todo.get(i);
-
-            if(result.get(min) > result.get(next)){
+            if (result.get(min) > result.get(next)) {
                 min = todo.get(i);
             }
         }
