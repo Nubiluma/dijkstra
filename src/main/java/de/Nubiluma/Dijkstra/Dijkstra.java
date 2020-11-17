@@ -11,25 +11,25 @@ import java.util.Set;
 
 public class Dijkstra<T> {
 
-    Set<T> todo;
-    List<T> done = new ArrayList<>();
+    Set<T> unvisited;
+    List<T> visited = new ArrayList<>();
     Map<T, Vertex<T>> result = new HashMap<>();
     private T min;
 
     public Map<T, Vertex<T>> evaluateDistances(org.jgrapht.Graph<T, DefaultEdge> graph, T start) {
 
-        todo = graph.vertexSet();
+        unvisited = graph.vertexSet();
 
         overpredict();
         result.put(start, new Vertex<>(start, 0));
 
-        while (!todo.isEmpty()) {
+        while (!unvisited.isEmpty()) {
 
             T currentNode = min();
-            todo.remove(currentNode);
-            done.add(currentNode);
+            unvisited.remove(currentNode);
+            visited.add(currentNode);
 
-            for (T t : todo) {
+            for (T t : unvisited) {
                 if (graph.getEdge(currentNode, t) != null && currentNode != t) {
                     relax(graph, currentNode, t);
                 } else {
@@ -41,7 +41,7 @@ public class Dijkstra<T> {
     }
 
     public void overpredict() {
-        for (T t : todo) {
+        for (T t : unvisited) {
             result.put(t, new Vertex<>(t, Integer.MAX_VALUE));
         }
     }
@@ -57,13 +57,13 @@ public class Dijkstra<T> {
 
     public T min() {
 
-        min = todo.iterator().next();
+        min = unvisited.iterator().next();
 
-        for (T t: todo){
-            T next = todo.iterator().next();
+        for (T t: unvisited){
+            T next = unvisited.iterator().next();
 
             if (result.get(min).getDistance() > result.get(next).getDistance()){
-                min = todo.iterator().next();
+                min = unvisited.iterator().next();
             }
         }
 
