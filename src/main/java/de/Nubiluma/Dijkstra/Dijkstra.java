@@ -30,20 +30,13 @@ public class Dijkstra<T> {
             done.add(currentNode);
 
             for (T t : todo) {
-                // TODO: Hier muss noch die Schleife auf Zeile 36 nachgebaut werden.
-            }
-
-            for (int i = 0; i < vertices.size(); i++) {
-
-                if (graph.getEdge(currentNode, vertices.get(i)) != null && currentNode != vertices.get(i)) {
-                    relax(graph, currentNode, vertices.get(i));
+                if (graph.getEdge(currentNode, t) != null && currentNode != t) {
+                    relax(graph, currentNode, t);
                 } else {
-                    System.out.println("Current node has no neighbours.");
+                    System.out.println("Current node has no neighbors.");
                 }
             }
-
         }
-
         return result;
     }
 
@@ -64,15 +57,13 @@ public class Dijkstra<T> {
 
     public T min() {
 
-        min = todo.get(0); // TODO: kann als todo.iterator().next(); umgeschrieben werden.
+        min = todo.iterator().next();
 
-        // TODO: Die Schleife muss noch mit einer for (T t: todo) umgebaut werden.
-        for (int i = 0; i < todo.size(); i++) {
+        for (T t: todo){
+            T next = todo.iterator().next();
 
-            T next = todo.get(i);
-
-            if (result.get(min) > result.get(next)) {
-                min = todo.get(i);
+            if (result.get(min).getDistance() > result.get(next).getDistance()){
+                min = todo.iterator().next();
             }
         }
 
